@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CartService } from '../services/cart.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SearchBarComponent } from '../search-bar/search-bar-component/search-bar-component';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { ApiTraining } from '../model/api-training.model';
+
 
 @Component({
   selector: 'app-trainings',
@@ -22,39 +23,37 @@ export class Trainings implements OnInit {
   trainings: ApiTraining[] = [];
   allTrainings: ApiTraining[] = [];
 
-  isAdmin = false;
-
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
   trainingForm!: FormGroup
 
   isEditing = false;
   formVisible = false;
   selectedTraining: ApiTraining | null = null;
 
-
   constructor(
 
     private cartService: CartService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
     console.log('Current user:', this.authService.getAuthenticatedUser());
-    this.isAdmin = this.authService.isAdmin();
+    //this.isAdmin = this.authService.isAdmin();
     console.log('Is admin?', this.isAdmin);
 
     this.apiService.getTrainings().subscribe({
       next: data => {
         this.allTrainings = data;
         this.trainings = data;
-
-        console.log('Formations reçues depuis Spring Boot :', this.trainings);
+        this.cdr.markForCheck();
       },
-      error: err => {
-        console.error('Erreur API Spring Boot :', err);
-      }
+      error: err => console.error('Erreur API Spring Boot :', err)
     });
 
   this.trainingForm = this.fb.group({
@@ -69,8 +68,6 @@ export class Trainings implements OnInit {
   }
 
   filterTrainings(keyword: string): void {
-    /*const value = keyword.toLowerCase();*/
-
     this.searchKeyword = keyword.toLowerCase();
     this.applyFilters();
   }
@@ -142,13 +139,11 @@ export class Trainings implements OnInit {
     if (this.isEditing) {
       this.apiService.putTraining(training.id, training).subscribe({
         next: updated => {
-          const index = this.trainings.findIndex(t => t.id === updated.id);
-
-          if (index !== -1) {
-            this.allTrainings[index] = updated;
-          }
-
+          const index = this.allTrainings.findIndex(t => t.id === updated.id);
+          if (index !== -1) this.allTrainings[index] = updated;
+          this.applyFilters();
           this.cancel();
+          this.cdr.markForCheck();
         },
         error: err => console.error('Erreur modification :', err)
       });
@@ -156,7 +151,9 @@ export class Trainings implements OnInit {
       this.apiService.postTraining(training).subscribe({
         next: newTraining => {
           this.allTrainings.push(newTraining);
+          this.applyFilters();
           this.cancel();
+          this.cdr.markForCheck();
         },
         error: err => console.error('Erreur ajout :', err)
     });
@@ -184,6 +181,7 @@ export class Trainings implements OnInit {
         this.allTrainings = this.allTrainings.filter(
           training => training.id !== id
         );
+        this.cdr.markForCheck();
         console.log('Formation supprimée avec succès');
       },
       error: err => {

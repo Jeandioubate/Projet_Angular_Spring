@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { CartItem } from '../model/cart_item.model';
-//import { Training } from '../model/training.model';
+
 import { isPlatformBrowser } from '@angular/common';
 import { ApiTraining } from '../model/api-training.model';
 
@@ -28,7 +28,7 @@ export class CartService {
     }
   }
 
-  //  Sauvegarder
+  //  sauvegarder
   private saveCart(): void {
     if (isPlatformBrowser(this.platformId))
 

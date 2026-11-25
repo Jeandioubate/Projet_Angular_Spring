@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -13,72 +13,54 @@ import { AuthService } from '../services/auth.service';
 export class Login {
 
     loginForm!: FormGroup;
+    error = '';
 
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
-        private router: Router,
-        private route: ActivatedRoute
+        private router: Router
     ) {}
 
-    isAdminLogin = false;
-
   ngOnInit(): void {
-    /*this.isAdminLogin = this.route.snapshot.queryParamMap.get('role') === 'admin';*/
-
     this.loginForm = this.fb.group({
-    email: ['', [
-      Validators.required,
-      Validators.pattern(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
-    ]],
-    password: ['', Validators.required]
-  });
+      email: ['', [
+        Validators.required,
+        Validators.pattern(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
+      ]],
+      password: ['', Validators.required]
+    });
   }
-
-  error = ''; 
 
   submit(): void {
     if (this.loginForm.invalid) return;
+    const {email, password} = this.loginForm.value;
 
+    this.authService.login(email!, password!).subscribe(success => {
+      if (!success) {
+        this.error = 'Email ou mot de passe incorrect';
+        return;
+      }
+      const user = this.authService.getAuthenticatedUser();
+      this.router.navigate([user?.roles.includes('ADMIN') ? '/trainings' : '/order']);
+    });
+  }
+
+  /*login(): void {
     const { email, password } = this.loginForm.value;
 
     const success = this.authService.login(email!, password!);
 
     if (!success) {
-      this.error = 'Email ou mot de passe incorrect';
+      this.error = 'Identifiants incorrects';
       return;
     }
 
-    const user = this.authService.getAuthenticatedUser();
+    this.router.navigate(['/trainings']);
 
-  //  ADMIN → trainings avec droits admin
-    if (user?.roles.includes('ADMIN')) {
-      this.router.navigate(['/trainings']);
-      return;
-  }
+    console.log('LOGIN OK'); //
 
-  // 👤 USER classique
-    this.router.navigate(['/order']);
-}
+    this.router.navigate(['/cart']);
 
-
-login(): void {
-  const { email, password } = this.loginForm.value;
-
-  const success = this.authService.login(email!, password!);
-
-  if (!success) {
-    this.error = 'Identifiants incorrects';
-    return;
-  }
-
-  this.router.navigate(['/trainings']);
-
-  console.log('LOGIN OK'); // 
-
-  this.router.navigate(['/cart']);
-
-  console.log(this.authService.getAuthenticatedUser());
-}
-
+    console.log(this.authService.getAuthenticatedUser());
+  }*/
 }

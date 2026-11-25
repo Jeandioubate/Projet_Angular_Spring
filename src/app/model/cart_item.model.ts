@@ -1,4 +1,3 @@
-import { Training } from './training.model';
 
 export interface CartItem {
   id: number;

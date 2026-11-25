@@ -2,12 +2,12 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import CryptoJS from 'crypto-js';
 
-
+export const TOKEN_KEY = 'auth_token';
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
 
-  private secretKey = 'SECRET_KEY'; 
+  private secretKey = 'SECRET_KEY';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 

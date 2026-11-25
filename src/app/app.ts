@@ -13,7 +13,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  /*protected readonly title = signal('Trainings Front App');*/
 
   isLoggedIn = false;
 

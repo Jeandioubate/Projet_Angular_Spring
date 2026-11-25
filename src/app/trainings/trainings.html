@@ -2,7 +2,6 @@
 
   <app-search-bar-component (search)="filterTrainings($event)"></app-search-bar-component>
 
-
   <div class="row mb-3">
 
    <!-- Prix max -->
@@ -26,12 +25,10 @@
 
     <h5>{{ isEditing ? 'Modifier' : 'Ajouter' }} une formation</h5>
 
-    <!--input class="form-control mb-2" placeholder="ID" formControlName="id" [disabled]="isEditing" />-->
     <input class="form-control mb-2" placeholder="Nom" formControlName="name" />
     <input class="form-control mb-2" placeholder="Description" formControlName="description" />
     <input type="number" class="form-control mb-2" placeholder="Prix" formControlName="price" />
     <input type="number" class="form-control mb-3" placeholder="Quantité" formControlName="quantity" />
-
 
     <div class="d-flex gap-2">
       <button class="btn btn-success" type="button" (click)="saveTraining()">
@@ -44,12 +41,7 @@
       </button>
     </div>
 
-    <!--button class="btn btn-success me-2" (click)="saveTraining()">
-      {{ editMode ? 'Modifier' : 'Ajouter' }}
-    </button>
-
-    <button class="btn btn-secondary" (click)="cancel()">Annuler</button>-->  </form>
-
+  </form>
 
   <!-- <h2 class="mb-3">Liste des formations</h2> -->
     <button
@@ -95,18 +87,6 @@
         </td>
 
         <td>
-          <!--button *ngIf="isAdmin" (click)="addTraining()">➕ Ajouter</button>
-          <button *ngIf="isAdmin" (click)="editTraining(training)">✏️ Modifier</button>
-          <button *ngIf="isAdmin" (click)="deleteTraining(training.id)">🗑️ Supprimer</button>-->
-
-          <!--button
-            *ngIf="isAdmin"
-            class="btn btn-primary"
-            (click)="openAddForm()"
-          >
-            ➕ Ajouter une formation
-          </button>-->
-
 
           <button
             *ngIf="isAdmin"
